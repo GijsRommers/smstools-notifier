@@ -23,6 +23,7 @@ final class SmstoolsRequestParserTest extends TestCase
             'message' => [
                 'messageid' => 'msg_123',
                 'receiver' => '32470123456',
+                'delivery_code' => '1',
                 'delivery_status' => 'delivered',
             ],
         ]);
@@ -33,6 +34,26 @@ final class SmstoolsRequestParserTest extends TestCase
         self::assertSame(SmsEvent::DELIVERED, $event->getName());
         self::assertSame('wh_123', $event->getId());
         self::assertSame('32470123456', $event->getRecipientPhone());
+    }
+
+    public function testItDoesNotTreatAnIntermediateDeliveryReportAsFailed(): void
+    {
+        $request = $this->signedRequest([
+            'webhook_id' => 'wh_789',
+            'webhook_type' => 'delivery_report',
+            'message' => [
+                'messageid' => 'msg_789',
+                'receiver' => '32470123456',
+                'delivery_code' => '0',
+                'delivery_status' => 'submitted',
+            ],
+        ]);
+
+        $event = (new SmstoolsRequestParser())->parse($request, self::SECRET);
+
+        self::assertInstanceOf(RemoteEvent::class, $event);
+        self::assertNotInstanceOf(SmsEvent::class, $event);
+        self::assertSame('delivery_report', $event->getName());
     }
 
     public function testItPreservesOtherAuthenticatedWebhookTypes(): void

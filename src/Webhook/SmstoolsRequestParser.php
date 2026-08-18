@@ -92,8 +92,16 @@ final class SmstoolsRequestParser extends AbstractRequestParser
             throw new RejectWebhookException(406, 'The SMSTools delivery report has no message payload.');
         }
 
-        $deliveryStatus = strtolower($this->stringValue($message['delivery_status'] ?? null) ?? '');
-        $name = $deliveryStatus === 'delivered' ? SmsEvent::DELIVERED : SmsEvent::FAILED;
+        $deliveryCode = $this->stringValue($message['delivery_code'] ?? null);
+        $name = match ($deliveryCode) {
+            '1' => SmsEvent::DELIVERED,
+            '2', '4', '5' => SmsEvent::FAILED,
+            default => null,
+        };
+        if ($name === null) {
+            return new RemoteEvent($type, $id, $payload);
+        }
+
         $event = new SmsEvent($name, $id, $payload);
         $event->setRecipientPhone($this->stringValue($message['receiver'] ?? null) ?? '');
 

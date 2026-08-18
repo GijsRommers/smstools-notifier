@@ -73,8 +73,9 @@ framework:
 Point the SMSTools webhook at `/webhook/smstools`. The parser validates the
 `X-Smstools-Timestamp` and `X-Smstools-Signature` headers against the unmodified
 request body and rejects signatures older than five minutes. Delivery reports
-are exposed as Symfony `SmsEvent` instances; other authenticated SMSTools events
-remain available as generic `RemoteEvent` instances.
+with terminal delivered/not-delivered codes are exposed as Symfony `SmsEvent`
+instances. Intermediate reports and other authenticated SMSTools events remain
+available as generic `RemoteEvent` instances.
 
 ## Development
 
