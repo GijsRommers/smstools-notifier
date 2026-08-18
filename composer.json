@@ -19,6 +19,9 @@
         "php": "^8.2",
         "symfony/event-dispatcher-contracts": "^3.5",
         "symfony/http-client-contracts": "^3.5",
+        "symfony/config": "^7.4 || ^8.0",
+        "symfony/dependency-injection": "^7.4 || ^8.0",
+        "symfony/http-kernel": "^7.4 || ^8.0",
         "symfony/notifier": "^7.4 || ^8.0"
     },
     "require-dev": {
@@ -37,6 +40,11 @@
     "autoload-dev": {
         "psr-4": {
             "GijsRommers\\SmstoolsNotifier\\Tests\\": "tests/"
+        }
+    },
+    "extra": {
+        "symfony": {
+            "require": "^7.4 || ^8.0"
         }
     },
     "scripts": {

@@ -8,17 +8,6 @@ An unofficial [SMSTools](https://www.smstools.com/en/sms-gateway-api/) transport
 composer require gijsrommers/smstools-notifier
 ```
 
-Register the transport factory:
-
-```yaml
-# config/services.yaml
-services:
-    GijsRommers\SmstoolsNotifier\SmstoolsTransportFactory:
-        autowire: true
-        autoconfigure: false
-        tags: ['texter.transport_factory']
-```
-
 Configure the transport:
 
 ```dotenv
@@ -32,6 +21,10 @@ framework:
         texter_transports:
             smstools: '%env(SMS_TOOLS_DSN)%'
 ```
+
+Symfony Flex enables `SmstoolsNotifierBundle` and creates this configuration
+automatically. Applications without Flex can enable the bundle manually in
+`config/bundles.php`.
 
 Send an SMS using Symfony's standard API:
 
