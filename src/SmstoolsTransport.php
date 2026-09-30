@@ -64,12 +64,18 @@ final class SmstoolsTransport extends AbstractTransport
             throw new TransportException('Unable to send an SMS through SMSTools.', $response, previous: $exception);
         }
 
-        $decoded = json_decode($content, true);
-        $info = is_array($decoded) ? $decoded : [];
-        $sentMessage = new SentMessage($message, (string) $this, $info);
-        if (is_string($info['messageid'] ?? null)) {
-            $sentMessage->setMessageId($info['messageid']);
+        try {
+            $info = json_decode($content, true, 512, JSON_THROW_ON_ERROR);
+        } catch (\JsonException $exception) {
+            throw new TransportException('Unable to send an SMS through SMSTools: invalid JSON response.', $response, previous: $exception);
         }
+
+        if (!is_array($info) || !is_string($info['messageid'] ?? null) || trim($info['messageid']) === '') {
+            throw new TransportException('Unable to send an SMS through SMSTools: missing or invalid message ID.', $response);
+        }
+
+        $sentMessage = new SentMessage($message, (string) $this, $info);
+        $sentMessage->setMessageId($info['messageid']);
 
         return $sentMessage;
     }
